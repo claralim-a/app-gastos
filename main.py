@@ -6,8 +6,8 @@ from costs import costs
 def md_menu():
     chosen_menu = sac.menu([
 
-        sac.MenuItem('Costs', icon='bi bi-wallet2'),
-        sac.MenuItem('Exchange Rates', icon='bi bi-wallet2'),
+        sac.MenuItem('Costs', icon='bi bi-bar-chart'),
+        sac.MenuItem('Exchange Rates', icon='currency-exchange'),
 
     ], open_index=[0, 8], open_all=False, return_index=True, size='md', variant='light', color='gray', format_func='title')
     
@@ -20,7 +20,6 @@ def md_main():
         sac.divider(align='center')
         
         chosen_menu = md_menu()
-        # st.write(chosen_menu)
         st.markdown(f"<p style='color: gray;'>Page ID: {chosen_menu}</p>", unsafe_allow_html=True)
 
     match chosen_menu:

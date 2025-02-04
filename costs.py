@@ -74,6 +74,8 @@ def costs():
                 st.markdown(mkd, unsafe_allow_html=True)                   
 
         # Categorias --------------------------------------------------------------------
+        st.write('')
+        st.write('')
         st.header('Por Categoria', divider = 'gray')
 
         # Agrupar, somar e ordenar os dados
@@ -94,76 +96,32 @@ def costs():
                 mkd = gera_markdown(row["Categoria"], row["Preço EUR"])
                 with col:
                     st.markdown(mkd, unsafe_allow_html=True)
-
-        # Identificar as duas menores categorias
-        menores_categorias = categ_costs_df.tail(2)
-
-        # Criar uma nova linha para "Outros" com a soma das duas menores categorias
-        linha_outros = pd.DataFrame({
-            "Categoria": ["Outros"],
-            "Preço EUR": [menores_categorias["Preço EUR"].sum()],
-            "Porcentagem": [menores_categorias["Preço EUR"].sum() / categ_costs_df["Preço EUR"].sum() * 100],
-            "Total": ["Gastos Totais"]
-        })
-
-        # Remover as duas menores categorias do DataFrame
-        categ_costs_df = categ_costs_df.drop(menores_categorias.index)
-
-        # Adicionar a linha "Outros" ao final do DataFrame
-        categ_costs_df = pd.concat([categ_costs_df, linha_outros], ignore_index=True)            
-        
+          
         # Calculando a porcentagem de cada categoria
         categ_costs_df["Porcentagem"] = categ_costs_df["Preço EUR"] / categ_costs_df["Preço EUR"].sum() * 100
 
-        # Criando um valor fictício "Total" para que todas as categorias sejam empilhadas em uma única barra
-        categ_costs_df["Total"] = "Gastos Totais"
+        # Criando o gráfico treemap
+        fig = px.treemap(categ_costs_df, 
+                        path=['Categoria'],  
+                        values='Porcentagem',  
+                        color='Categoria',  
+                        color_discrete_sequence=color_scheme,  
+                        title=''
+                        )
 
-        # # Criando o gráfico de barra empilhada
-        # fig = px.bar(
-        #     categ_costs_df, 
-        #     x="Porcentagem", 
-        #     y="Total", 
-        #     color="Categoria",
-        #     color_discrete_sequence=color_scheme, 
-        #     # text=categ_costs_df["Categoria"],
-        #     text=categ_costs_df.apply(lambda row: f"{row['Categoria']} ({row['Porcentagem']:.2f}%)", axis=1),  # Exibindo a categoria e a porcentagem
-        #     title="",
-        #     orientation="h"  # Faz as barras horizontais
-        # )
+        # Adiciona os valores em euros como texto dentro dos retângulos
+        fig.update_traces(
+            texttemplate='%{label} (%{value:.1f}%)<br>',  
+            customdata=categ_costs_df['Preço EUR'],
+            textfont=dict(size=18)
+        )
 
-        # fig.update_layout(
-        #     xaxis=dict(title="%", showticklabels=True, showgrid=False, zeroline=False),
-        #     yaxis=dict(title="", showticklabels=False, showgrid=False, zeroline=False),
-        #     showlegend=False,
-        #     height=150,
-        #     width=1000,
-        #     margin=dict(l=0, r=100, t=0, b=0)  # Reduces extra margins
-        # )     
+        # Esconde a legenda para manter a estética do gráfico
+        fig.update_layout(showlegend=False)
 
-        # st.plotly_chart(fig, use_container_width=False)
+        # Exibe no Streamlit
+        st.plotly_chart(fig, use_container_width=True)
 
-        cols = st.columns(2)
-
-        with cols[0]:
-
-            fig = px.pie(categ_costs_df, 
-                            values = 'Porcentagem', 
-                            names = 'Categoria', 
-                            title = '', 
-                            color= 'Categoria',
-                            color_discrete_sequence = color_scheme, 
-                            hole= 0.5)
-            
-            fig = fn_update_layout(fig, 500, 400, '', 17, "", "", 14, 14, '')
-            
-            fig.update_traces(
-            textposition='outside',
-            texttemplate='%{label} (%{percent:.1%})',
-            customdata=categ_costs_df['Preço EUR']
-            )
-            fig.update_layout(showlegend=False)
-
-            st.plotly_chart(fig, use_container_width=True)
 
         # # Filtro 2: Mês =====================================================   
         # if 'mes' not in st.session_state:
