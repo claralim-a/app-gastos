@@ -1,13 +1,14 @@
 import streamlit as st 
 import streamlit_antd_components as sac
 
-from costs import costs
+from custos import costs
+from viagens import viagens
 
 def md_menu():
     chosen_menu = sac.menu([
 
-        sac.MenuItem('Costs', icon='bi bi-bar-chart'),
-        sac.MenuItem('Exchange Rates', icon='currency-exchange'),
+        sac.MenuItem('Custos', icon='bi bi-bar-chart'),
+        sac.MenuItem('Viagens', icon='currency-exchange'),
 
     ], open_index=[0, 8], open_all=False, return_index=True, size='md', variant='light', color='gray', format_func='title')
     
@@ -24,5 +25,8 @@ def md_main():
 
     match chosen_menu:
 
-        case 0: # Costs
+        case 0: # Custos
             costs()
+
+        case 1: # Viagens
+            viagens()

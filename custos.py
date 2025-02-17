@@ -3,7 +3,7 @@ import streamlit as st
 import plotly_express as px
 import st_aggrid
 from st_aggrid import AgGrid, GridOptionsBuilder, ColumnsAutoSizeMode
-from functions_costs import gera_markdown, color_scheme, color_scheme_plus
+from functions import gera_markdown, color_scheme, color_scheme_plus
 from charts import fn_update_layout
 
 
@@ -16,7 +16,6 @@ def costs():
 
     # Converte a data
     df_costs['Data'] = pd.to_datetime(df_costs['Data']).dt.strftime('%d/%m/%Y')
-
 
     # Filtro 1: Quem pagou? =====================================================
     if 'agrupar' not in st.session_state:
@@ -36,19 +35,17 @@ def costs():
         df_trabalho = df_costs
 
     total_cost = df_trabalho['Preço EUR'].sum()
-    # Titulo
-    st.title(f"Custo Do Intercâmbio: {total_cost:.2f} €")
-    st.write(f"Média mensal: {total_cost/2:.2f} €")
 
-    tabs = st.tabs(['Overview', 'Mensal', 'Viagens'])
+    tabs = st.tabs(['Overview', 'Mensal'])
 
     # Overview =============================================================================
 
     with tabs[0]:
+        st.header('Tabela Completa', divider = 'gray')
         df_trabalho_summary = df_trabalho[['Data', 'Categoria', 'Descrição', 'Preço EUR', 'Método de Pagamento']]        
         st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
 
-        st.header('Por mês', divider = 'gray')
+        st.header('Por Mês', divider = 'gray')
 
         # Por Mês --------------------------------------------------------------
 
@@ -133,13 +130,14 @@ def costs():
         for mes in meses_ordenados:
             if st.session_state.mes == f'{mes}':
                 df_trabalho = df_trabalho[df_trabalho['Mês'] == f'{mes}']
+                df_trabalho  = df_trabalho.sort_values('Data', ascending = True)
 
         # Geral --------------------------------------------------
         custo_mensal = df_trabalho["Preço EUR"].sum()
 
         st.write('')
         st.write('')
-        st.header(f'Custo Mensal                    .: {custo_mensal:.2f} €', divider = 'gray')
+        st.header(f'Custo Mensal: {custo_mensal:.2f} €', divider = 'gray')
         df_trabalho_summary = df_trabalho[['Data', 'Categoria', 'Descrição', 'Preço EUR', 'Método de Pagamento']]        
         st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
 
@@ -190,26 +188,20 @@ def costs():
                 with col:
                     st.markdown(mkd, unsafe_allow_html=True)
 
-        # Tabela AgGrid
-        df_categoria = df_trabalho[["Categoria", "Data", "Descrição", "Preço EUR"]]
-        gb = GridOptionsBuilder.from_dataframe(df_categoria)
-        gb.configure_column(field = "Categoria", header_name = 'Categoria', groupable = True, value = True, enableRowGroup= True, rowGroup=True, hide = True)
-        gb.configure_column(field = "Data",  groupable=False, rowGroup=False, header_name="Data", hide= False)
-        gb.configure_column(field = "Descrição",  groupable=False, rowGroup=False, header_name="Descrição", hide= False)
-        gb.configure_column(field = "Preço EUR", aggFunc="sum", type="numericColumn", valueFormatter="value.toLocaleString('en', {minimumFractionDigits: 2, maximumFractionDigits: 2})", groupable = False, hide = False, header_name = "Preço EUR")
-        gb.configure_grid_options(domLayout="normal", suppressAggFuncInHeader = True,groupDisplayType = 'multipleColumns') 
-        gridOptions = gb.build()
-        st.write('')
-
         with st.expander("Tabela Agrupada", expanded=False):
-            AgGrid(df_categoria, 
-                    gridOptions=gridOptions, 
-                    height = 300, 
-                    allow_unsafe_jscode= True,
-                    fit_columns_on_grid_load=True, 
-                    update_mode=st_aggrid.GridUpdateMode.NO_UPDATE, 
-                    columns_auto_size_mode = ColumnsAutoSizeMode.FIT_CONTENTS,
-                    theme="streamlit")
+            if 'categoria' not in st.session_state:
+                st.session_state.categoria = "Mercado"
+
+            categorias = set(list(df_trabalho_summary['Categoria']))
+
+            st.session_state.categoria = st.radio('', options= categorias, horizontal=True)
+
+            # Filtra dataframe pelo Categoria
+            for categoria in categorias:
+                if st.session_state.categoria == f'{categoria}':
+                    df_trabalho_summary = df_trabalho_summary[df_trabalho_summary['Categoria'] == f'{categoria}']
+            
+            st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
         
 
         # Por Dia --------------------------------------------------
