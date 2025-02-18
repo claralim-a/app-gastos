@@ -14,8 +14,13 @@ def costs():
     # Lista com os meses
     meses_ordenados = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"]
 
+    # Variável com a última data disponível
+    df_costs  = df_costs.sort_values('Data', ascending = True)
+
     # Converte a data
     df_costs['Data'] = pd.to_datetime(df_costs['Data']).dt.strftime('%d/%m/%Y')
+    latest_date = df_costs['Data'].iloc[-1]
+    st.write(f"Última atualização da planilha de custos: {latest_date}")    
 
     # Filtro 1: Quem pagou? =====================================================
     if 'agrupar' not in st.session_state:
@@ -137,7 +142,7 @@ def costs():
 
         st.write('')
         st.write('')
-        st.header(f'Custo Mensal: {custo_mensal:.2f} €', divider = 'gray')
+        st.header(f'Custo do mês de {st.session_state.mes}: {custo_mensal:.2f} €', divider = 'gray')
         df_trabalho_summary = df_trabalho[['Data', 'Categoria', 'Descrição', 'Preço EUR', 'Método de Pagamento']]        
         st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
 
