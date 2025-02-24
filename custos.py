@@ -223,6 +223,35 @@ def costs():
         # Exibir gráfico no Streamlit
         st.plotly_chart(fig)        
 
+        # # Mesada -------------------------------------------------------------
+        # df_mesada = pd.read_excel("assets/mesada.xlsx")
+        # df_mesada = df_mesada[df_mesada["Mês Uso"] == st.session_state.mes]
+        # df_mesada["Data"] = pd.to_datetime(df_mesada["Data"]).dt.strftime("%d/%m/%Y")
+        
+        # if st.session_state.agrupar == 'Pais':
+        #     # with st.expander("Entradas x Saídas (Mesada)", expanded=False):
+        #         st.header("Entradas x Saídas (Mesada)", divider='gray')
+        #         entrada = df_mesada["Valor EUR"].sum()
+        #         saida = custo_mensal
+        #         diferenca = entrada - saida
+
+        #         cols = st.columns(3)
+
+        #         with cols[0]:
+        #             mkd_entrada = gera_markdown("Entradas", entrada)
+        #             st.markdown(mkd_entrada, unsafe_allow_html=True)
+                
+        #         with cols[1]:
+        #             mkd_saida = gera_markdown("Saídas", saida)
+        #             st.markdown(mkd_saida, unsafe_allow_html=True)
+
+        #         with cols[2]:
+        #             mkd_diferenca = gera_markdown("Diferença", diferenca)
+        #             st.markdown(mkd_diferenca, unsafe_allow_html=True)
+                    
+        #         st.write("")
+        #         st.dataframe(df_mesada, hide_index=True, use_container_width=True)
+
 
 
 
