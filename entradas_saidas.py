@@ -11,6 +11,7 @@ def entradas_x_saidas():
 
     # Df costs
     df_costs_pais = df_costs[df_costs["Quem Pagou?"] == "Pais"]
+    df_costs_pais = df_costs_pais[df_costs_pais["Método de Pagamento"] != "CC"]
     df_costs_pais = df_costs_pais.drop(columns=["Destino-Viagem", "Categoria-Viagem"])
     df_costs_pais['Data'] = pd.to_datetime(df_costs_pais['Data']).dt.strftime('%d/%m/%Y')
     df_costs_pais  = df_costs_pais.sort_values('Data', ascending = True)
@@ -20,7 +21,6 @@ def entradas_x_saidas():
     # Variável com a última data disponível
     df_mesada  = df_mesada.sort_values('Data', ascending = True)
     df_mesada['Data'] = pd.to_datetime(df_mesada['Data']).dt.strftime('%d/%m/%Y')
-    latest_date = df_mesada['Data'].iloc[-1]
     
     # Variável aluguel
     total_aluguel = (500 + 600*5)
