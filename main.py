@@ -1,9 +1,9 @@
 import streamlit as st 
 import streamlit_antd_components as sac
 
-from custos import costs
-from entradas_saidas import entradas_x_saidas
-from viagens import viagens
+from tabs.custos import custos
+from tabs.entradas_saidas import entradas_x_saidas
+from tabs.viagens import viagens
 
 def md_menu():
     chosen_menu = sac.menu([
@@ -28,7 +28,7 @@ def md_main():
     match chosen_menu:
 
         case 0: # Custos
-            costs()
+            custos()
 
         case 1: # Entradas x Saídas
             entradas_x_saidas()

@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
-from functions import gera_markdown
-from utils.utils import total_aluguel, ordem_meses
+from utils.functions import gera_markdown
+from utils.utils import total_aluguel, meses_ordenados
 
 
 def entradas_x_saidas():
@@ -49,7 +49,7 @@ def entradas_x_saidas():
     df_final["Líquido"] = df_final["Entrada"] - df_final["Saída"]
 
     # Ordenando por Mês 
-    df_final["Mês"] = pd.Categorical(df_final["Mês"], categories=ordem_meses, ordered=True)
+    df_final["Mês"] = pd.Categorical(df_final["Mês"], categories=meses_ordenados, ordered=True)
     df_final = df_final.sort_values("Mês")
 
     # Front ==================================================

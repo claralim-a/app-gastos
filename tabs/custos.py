@@ -1,26 +1,13 @@
 import pandas as pd
 import streamlit as st
 import plotly_express as px
-import st_aggrid
-from st_aggrid import AgGrid, GridOptionsBuilder, ColumnsAutoSizeMode
-from functions import gera_markdown, color_scheme, color_scheme_plus
-from charts import fn_update_layout
+from utils.functions import gera_markdown
+from utils.utils import df_custos, meses_ordenados, ultima_data, dict_cores
 
 
-def costs():
-    # Le a table
-    df_costs = pd.read_excel("assets/cost_sheet.xlsx")
-
-    # Lista com os meses
-    meses_ordenados = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"]
-
-    # Variável com a última data disponível
-    df_costs  = df_costs.sort_values('Data', ascending = True)
-
-    # Converte a data
-    df_costs['Data'] = pd.to_datetime(df_costs['Data']).dt.strftime('%d/%m/%Y')
-    latest_date = df_costs['Data'].iloc[-1]
-    st.write(f"Última atualização da planilha de custos: {latest_date}")    
+def custos():
+    # Exibe última data de atualização da planilha 
+    st.write(f"Última atualização da planilha de custos: {ultima_data}")    
 
     # Filtro 1: Quem pagou? =====================================================
     if 'agrupar' not in st.session_state:
@@ -31,15 +18,13 @@ def costs():
 
     # Pais
     if st.session_state.agrupar == 'Pais':
-        df_trabalho = df_costs[df_costs['Quem Pagou?'] == 'Pais']
+        df_trabalho = df_custos[df_custos['Quem Pagou?'] == 'Pais']
     # Clara
     elif st.session_state.agrupar == 'Clara':
-        df_trabalho = df_costs[df_costs['Quem Pagou?'] == 'Clara']
+        df_trabalho = df_custos[df_custos['Quem Pagou?'] == 'Clara']
     # Total
     elif st.session_state.agrupar == 'Total':
-        df_trabalho = df_costs
-
-    total_cost = df_trabalho['Preço EUR'].sum()
+        df_trabalho = df_custos
 
     tabs = st.tabs(['Overview', 'Mensal'])
 
@@ -50,9 +35,8 @@ def costs():
         df_trabalho_summary = df_trabalho[['Data', 'Categoria', 'Descrição', 'Preço EUR', 'Método de Pagamento']]        
         st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
 
-        st.header('Por Mês', divider = 'gray')
-
         # Por Mês --------------------------------------------------------------
+        st.header('Por Mês', divider = 'gray')
 
         # Agrupar os custos por mês
         df_monthly = df_trabalho.groupby('Mês', as_index=False)['Preço EUR'].sum()
@@ -63,10 +47,10 @@ def costs():
         # Criar gráfico com Plotly
         fig = px.bar(df_monthly, x='Mês', y='Preço EUR', labels={'Preço EUR': 'Custo (€)'})
 
-        # Exibir gráfico no Streamlit
+        # Exibir gráfico 
         st.plotly_chart(fig)        
         
-        # Criar colunas no Streamlit
+        # Criar colunas
         cols = st.columns(len(meses_ordenados))  # Usar todos os meses para manter layout fixo
 
         # Iterar sobre os meses e custos, garantindo que todos sejam exibidos
@@ -95,7 +79,7 @@ def costs():
                         path=['Categoria'],  
                         values='Porcentagem',  
                         color='Categoria',  
-                        color_discrete_sequence=color_scheme,  
+                        color_discrete_sequence=dict_cores,  
                         title=''
                         )
 
@@ -166,7 +150,7 @@ def costs():
                         path=['Categoria'],  
                         values='Porcentagem',  
                         color='Categoria',  
-                        color_discrete_sequence=color_scheme,  
+                        color_discrete_sequence=dict_cores,  
                         title=''
                         )
 
@@ -208,7 +192,6 @@ def costs():
             
             st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
         
-
         # Por Dia --------------------------------------------------
         st.write('')
         st.write('')
@@ -220,37 +203,9 @@ def costs():
         # Criar gráfico com Plotly
         fig = px.bar(df_monthly, x='Data', y='Preço EUR', labels={'Preço EUR': 'Custo (€)'})
 
-        # Exibir gráfico no Streamlit
+        # Exibir gráfico 
         st.plotly_chart(fig)        
 
-        # # Mesada -------------------------------------------------------------
-        # df_mesada = pd.read_excel("assets/mesada.xlsx")
-        # df_mesada = df_mesada[df_mesada["Mês Uso"] == st.session_state.mes]
-        # df_mesada["Data"] = pd.to_datetime(df_mesada["Data"]).dt.strftime("%d/%m/%Y")
-        
-        # if st.session_state.agrupar == 'Pais':
-        #     # with st.expander("Entradas x Saídas (Mesada)", expanded=False):
-        #         st.header("Entradas x Saídas (Mesada)", divider='gray')
-        #         entrada = df_mesada["Valor EUR"].sum()
-        #         saida = custo_mensal
-        #         diferenca = entrada - saida
-
-        #         cols = st.columns(3)
-
-        #         with cols[0]:
-        #             mkd_entrada = gera_markdown("Entradas", entrada)
-        #             st.markdown(mkd_entrada, unsafe_allow_html=True)
-                
-        #         with cols[1]:
-        #             mkd_saida = gera_markdown("Saídas", saida)
-        #             st.markdown(mkd_saida, unsafe_allow_html=True)
-
-        #         with cols[2]:
-        #             mkd_diferenca = gera_markdown("Diferença", diferenca)
-        #             st.markdown(mkd_diferenca, unsafe_allow_html=True)
-                    
-        #         st.write("")
-        #         st.dataframe(df_mesada, hide_index=True, use_container_width=True)
 
 
 
