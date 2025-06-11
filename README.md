@@ -8,6 +8,8 @@ Este aplicativo foi desenvolvido para ajudar na organização financeira durante
 
 Com visualizações interativas, gráficos e filtros, consigo acompanhar facilmente para onde o dinheiro está indo e manter a transparência e o planejamento junto à família.
 
+Obs: dados fictícios.
+
 ---
 
 ## ⚙️ Funcionalidades
