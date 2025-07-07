@@ -19,12 +19,15 @@ def custos():
     # Pais
     if st.session_state.agrupar == 'Pais':
         df_trabalho = df_custos[df_custos['Quem Pagou?'] == 'Pais']
+        gasto_aluguel = 600 * 6
     # Clara
     elif st.session_state.agrupar == 'Clara':
         df_trabalho = df_custos[df_custos['Quem Pagou?'] == 'Clara']
+        gasto_aluguel = 0
     # Total
     elif st.session_state.agrupar == 'Total':
         df_trabalho = df_custos
+        gasto_aluguel = 600 * 6
 
     tabs = st.tabs(['Overview', 'Mensal'])
 
@@ -32,6 +35,10 @@ def custos():
 
     with tabs[0]:
         st.header('Tabela Completa', divider = 'gray')
+        gasto_planilha = round(sum(df_trabalho['Preço EUR']), 2)
+        gasto_total = gasto_planilha + gasto_aluguel
+        st.subheader(f"Gasto total: {gasto_total}€")
+        st.write("Obs.: desconsiderando custos prévios (passagem, seguro, visto, etc.)")
         df_trabalho_summary = df_trabalho[['Data', 'Categoria', 'Descrição', 'Preço EUR', 'Método de Pagamento']]        
         st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
 

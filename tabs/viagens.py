@@ -77,6 +77,6 @@ def viagens():
             textfont=dict(size=18))
 
         # Ajustar layout
-        fig.update_layout(showlegend=False, margin=dict(r=0, t=0, b=0), height=400)
+        fig.update_layout(showlegend=False, margin=dict(r=0, t=0, b=0), height=2000)
 
         st.plotly_chart(fig, use_container_width=True)
