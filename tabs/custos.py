@@ -38,7 +38,7 @@ def custos():
         gasto_planilha = round(sum(df_trabalho['Preço EUR']), 2)
         gasto_total = gasto_planilha + gasto_aluguel
         st.subheader(f"Gasto total: {gasto_total}€")
-        st.write("Obs.: desconsiderando custos prévios (passagem, seguro, visto, etc.)")
+        st.write("Obs.: desconsiderando custos prévios (passagem, seguro, visto, etc.)") 
         df_trabalho_summary = df_trabalho[['Data', 'Categoria', 'Descrição', 'Preço EUR', 'Método de Pagamento']]        
         st.dataframe(df_trabalho_summary, hide_index=True, use_container_width=True)
 
